@@ -10,7 +10,7 @@ import (
 var (
 	SecretKey = []byte("secret")
 )
-// test commit
+
 //data we save in each token
 type Claims struct {
 	username string
