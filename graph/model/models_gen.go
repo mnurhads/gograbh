@@ -19,6 +19,7 @@ type NewLink struct {
 
 type NewUser struct {
 	Username string `json:"username"`
+	Fullname string `json:"fullname"`
 	Password string `json:"password"`
 }
 
@@ -28,5 +29,7 @@ type RefreshTokenInput struct {
 
 type User struct {
 	ID   string `json:"id"`
+	Fullname string `json:"fullname"`
 	Name string `json:"name"`
+	Status string `json:"status"`
 }

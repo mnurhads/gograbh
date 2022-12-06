@@ -36,7 +36,7 @@ func (link Link) Save() int64 {
 }
 
 func GetAll() []Link {
-	stmt, err := database.Db.Prepare("select L.id, L.title, L.address, L.UserID, U.Username from Links L inner join Users U on L.UserID = U.ID")
+	stmt, err := database.Db.Prepare("select L.id, L.title, L.address, L.UserID, U.Fullname, U.Username, U.status from Links L inner join Users U on L.UserID = U.ID")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,15 +49,19 @@ func GetAll() []Link {
 	var links []Link
 	var username string
 	var id string
+	var fullname string
+	var status string
 	for rows.Next() {
 		var link Link
-		err := rows.Scan(&link.ID, &link.Title, &link.Address, &id, &username)
+		err := rows.Scan(&link.ID, &link.Title, &link.Address, &id, &fullname, &username, &status)
 		if err != nil {
 			log.Fatal(err)
 		}
 		link.User = &users.User{
 			ID:       id,
 			Username: username,
+			Fullname: fullname,
+			Status: status,
 		}
 		links = append(links, link)
 	}

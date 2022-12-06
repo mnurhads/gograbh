@@ -26,6 +26,8 @@ func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) 
 	grahpqlUser := &model.User{
 		ID:   user.ID,
 		Name: user.Username,
+		Fullname: user.Fullname,
+		Status: user.Status,
 	}
 	return &model.Link{ID: strconv.FormatInt(linkId, 10), Title: link.Title, Address: link.Address, User: grahpqlUser}, nil
 }
@@ -34,28 +36,36 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	var user users.User
 	user.Username = input.Username
 	user.Password = input.Password
-	user.Create()
+	user.Fullname = input.Fullname
 	token, err := jwt.GenerateToken(user.Username)
+	user.TokenRegist = token
+	user.Create()
 	if err != nil {
 		return "", err
 	}
-	return token, nil
+	var resp string
+	resp = input.Username
+	resp = input.Password
+	resp = token
+	return resp, nil
 }
 
 func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	var user users.User
 	user.Username = input.Username
 	user.Password = input.Password
+	token, err := jwt.GenerateToken(user.Username)
+	user.TokenLog = token
 	correct := user.Authenticate()
 	if !correct {
 		// 1
 		return "", &users.WrongUsernameOrPasswordError{}
 	}
-	token, err := jwt.GenerateToken(user.Username)
+
 	if err != nil {
 		return "", err
 	}
-	return token, nil
+	return user.TokenLog, nil
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
@@ -76,7 +86,10 @@ func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
 	dbLinks = links.GetAll()
 	for _, link := range dbLinks {
 		grahpqlUser := &model.User{
-			Name: link.User.Password,
+			ID: link.User.ID,
+			Name: link.User.Username,
+			Fullname: link.User.Fullname,
+			Status: link.User.Status,
 		}
 		resultLinks = append(resultLinks, &model.Link{ID: link.ID, Title: link.Title, Address: link.Address, User: grahpqlUser})
 	}

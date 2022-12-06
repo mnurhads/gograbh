@@ -8,19 +8,23 @@ import (
 )
 
 type User struct {
-	ID       string `json:"id"`
+	ID       string `json:"id"`   
+	Fullname string `json:"fullname"`
 	Username string `json:"name"`
 	Password string `json:"password"`
+	TokenRegist string `json:"token_regist"`
+	TokenLog string `json:"token_log"`
+	Status string `json:"status"`
 }
 
 func (user *User) Create() {
-	statement, err := database.Db.Prepare("INSERT INTO Users(Username,Password) VALUES(?,?)")
+	statement, err := database.Db.Prepare("INSERT INTO Users(Username,Password,Fullname,token_register) VALUES(?,?,?,?)")
 	print(statement)
 	if err != nil {
 		log.Fatal(err)
 	}
 	hashedPassword, err := HashPassword(user.Password)
-	_, err = statement.Exec(user.Username, hashedPassword)
+	_, err = statement.Exec(user.Username, hashedPassword, user.Fullname, user.TokenRegist)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +36,10 @@ func (user *User) Authenticate() bool {
 		log.Fatal(err)
 	}
 	row := statement.QueryRow(user.Username)
-
+	// update
+	updateLog, err := database.Db.Prepare("UPDATE Users SET token_login = ? WHERE username = ?")
+	_, err = updateLog.Exec(user.TokenLog, user.Username)
+	// end
 	var hashedPassword string
 	err = row.Scan(&hashedPassword)
 	if err != nil {
@@ -48,7 +55,7 @@ func (user *User) Authenticate() bool {
 
 //GetUserIdByUsername check if a user exists in database by given username
 func GetUserIdByUsername(username string) (int, error) {
-	statement, err := database.Db.Prepare("select ID from Users WHERE Username = ?")
+	statement, err := database.Db.Prepare("select * from Users WHERE Username = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,7 +75,7 @@ func GetUserIdByUsername(username string) (int, error) {
 
 //GetUserByID check if a user exists in database and return the user object.
 func GetUsernameById(userId string) (User, error) {
-	statement, err := database.Db.Prepare("select Username from Users WHERE ID = ?")
+	statement, err := database.Db.Prepare("select * from Users WHERE ID = ?")
 	if err != nil {
 		log.Fatal(err)
 	}

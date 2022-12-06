@@ -62,6 +62,9 @@ type ComplexityRoot struct {
 	User struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
+		// new
+		Fullname func(childComplexity int) int
+		Status   func(childComplexity int) int
 	}
 }
 
@@ -187,6 +190,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Name(childComplexity), true
 
+	case "User.fullname":
+		if e.complexity.User.Fullname == nil {
+			break
+		}
+
+		return e.complexity.User.Fullname(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -261,6 +271,8 @@ var sources = []*ast.Source{
 type User {
   id: ID!
   name: String!
+  fullname: String!
+  status: String!
 }
 
 type Query {
