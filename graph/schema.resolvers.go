@@ -12,7 +12,7 @@ import (
 	"gograb/internal/users"
 	"gograb/pkg/jwt"
 )
-// comment
+
 func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) (*model.Link, error) {
 	user := auth.ForContext(ctx)
 	if user == nil {
