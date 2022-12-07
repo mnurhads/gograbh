@@ -67,4 +67,5 @@ $ go run example.go
 ```
 # screenshoot
 
-![where-grap](https://user-images.githubusercontent.com/108712079/205874163-7b6ceafa-0d53-453f-8ae9-7a5b94dba86d.png)
+//![where-grap](https://user-images.githubusercontent.com/108712079/205874163-7b6ceafa-0d53-453f-8ae9-7a5b94dba86d.png)
+![links](https://user-images.githubusercontent.com/108712079/206078670-98b838e9-96ea-44d5-9e6f-fef83d98a205.png)
